@@ -28,7 +28,12 @@ function TabNavigator() {
         headerShown: false,
         tabBarActiveTintColor: c.accent,
         tabBarInactiveTintColor: c.muted,
-        tabBarStyle: { backgroundColor: c.tabBar, borderTopColor: c.tabBarBorder },
+        tabBarStyle: {
+          backgroundColor: c.tabBar,
+          borderTopColor: c.tabBarBorder,
+          // Browsers report inconsistent bottom insets, so the web bar has a fixed size.
+          ...(Platform.OS === 'web' && { height: 64, paddingTop: 6, paddingBottom: 8 }),
+        },
       }}
     >
       <Tab.Screen

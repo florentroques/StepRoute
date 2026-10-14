@@ -39,7 +39,17 @@ const config: ExpoConfig = {
     ['expo-sensors', { motionPermission: 'Allow StepRoute to count your steps while walking.' }],
   ],
   web: {
+    bundler: 'metro',
+    output: 'single',
     favicon: './assets/favicon.png',
+    name: 'StepRoute',
+    shortName: 'StepRoute',
+    description: 'Turn a step goal into a walking route.',
+    themeColor: '#5DBE4A',
+    backgroundColor: '#f2f7f2',
+    display: 'standalone',
+    orientation: 'portrait',
+    lang: 'en',
   },
   extra: {
     routeApiUrl,

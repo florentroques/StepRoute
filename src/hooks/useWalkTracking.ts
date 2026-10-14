@@ -1,6 +1,6 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, AppState } from 'react-native';
+import { AppState } from 'react-native';
 import { useTranslation } from '../i18n';
 import { requestLocationPermission } from '../services/locationPermission';
 import { LocationFix, LocationWatch, watchLocation } from '../services/locationWatch';
@@ -8,6 +8,7 @@ import { StepSubscription, watchSteps } from '../services/stepCounter';
 import { haversineMeters, heightToStrideLength, metersToSteps } from '../services/stepService';
 import { useStore } from '../store/useStore';
 import { LngLat } from '../types';
+import { showAlert } from '../utils/showAlert';
 
 // GPS step estimate: drop fixes that are too coarse and moves that are mostly jitter.
 const MAX_FIX_ACCURACY_M = 30;
@@ -96,7 +97,7 @@ export function useWalkTracking() {
     const strideLength = heightToStrideLength(heightCm);
     await activateKeepAwakeAsync();
     if (!(await requestLocationPermission())) {
-      Alert.alert(t.map.locationPermissionDeniedTitle, t.map.locationPermissionDeniedMessage);
+      showAlert(t.map.locationPermissionDeniedTitle, t.map.locationPermissionDeniedMessage);
     } else {
       setIsFollowingUser(true);
       isFollowingUserRef.current = true;

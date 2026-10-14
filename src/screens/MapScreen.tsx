@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useRef, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import RouteInfo from '../components/RouteInfo';
 import RouteMap, { RouteMapHandle } from '../components/RouteMap';
@@ -10,6 +10,7 @@ import { heightToStrideLength, stepsToMeters } from '../services/stepService';
 import { useStore } from '../store/useStore';
 import { getColors, useAppScheme } from '../theme';
 import { openInMaps } from '../utils/openInMaps';
+import { showAlert } from '../utils/showAlert';
 import { useTranslation } from '../i18n';
 
 export default function MapScreen() {
@@ -55,7 +56,7 @@ export default function MapScreen() {
     try {
       await openInMaps(routeData.geometry);
     } catch (e) {
-      Alert.alert('Open in Maps', String(e));
+      showAlert('Open in Maps', String(e));
     }
   }
 

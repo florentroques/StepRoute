@@ -5,6 +5,9 @@ export interface Coordinates {
   longitude: number;
 }
 
+/** GeoJSON-style [longitude, latitude] pair. */
+export type LngLat = [number, number];
+
 export interface UserInput {
   steps: number;
   strideLength: number;

@@ -25,7 +25,6 @@ export default function MapScreen() {
   const [regenerating, setRegenerating] = useState(false);
   const [overlayHeight, setOverlayHeight] = useState(220);
   const [isTracking, setIsTracking] = useState(false);
-  const [locationGranted, setLocationGranted] = useState(false);
   const [liveSteps, setLiveSteps] = useState(0);
   const [userPosition, setUserPosition] = useState<[number, number] | null>(null);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
@@ -55,7 +54,7 @@ export default function MapScreen() {
     if (storedIsTracking && !isTracking) {
       resumeTracking();
     }
-  }, [storedIsTracking]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [storedIsTracking]);
 
   // Save step count snapshot when app goes to background
   useEffect(() => {
@@ -65,7 +64,7 @@ export default function MapScreen() {
       }
     });
     return () => sub.remove();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -157,7 +156,6 @@ export default function MapScreen() {
     await activateKeepAwakeAsync();
     const { status: locStatus } = await Location.requestForegroundPermissionsAsync();
     const granted = locStatus === 'granted';
-    setLocationGranted(granted);
     if (!granted) {
       Alert.alert(
         t.map.locationPermissionDeniedTitle,

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '../store/useStore';
@@ -7,13 +7,7 @@ import { encodeRoute } from '../navigation/routeCodec';
 import { HistoryEntry } from '../types';
 import { getColors, useAppScheme } from '../theme';
 import { useTranslation } from '../i18n';
-import { canShareRoute, shareRoute } from '../utils/shareRoute';
-import { showAlert } from '../utils/showAlert';
-
-function formatDistance(meters: number) {
-  if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
-  return `${Math.round(meters)} m`;
-}
+import RouteCard from '../components/RouteCard';
 
 export default function HistoryScreen() {
   const navigation = useNavigation();
@@ -21,32 +15,9 @@ export default function HistoryScreen() {
   const c = getColors(useAppScheme(themePreference));
   const insets = useSafeAreaInsets();
   const t = useTranslation();
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  function formatDate(iso: string) {
-    const d = new Date(iso);
-    return d.toLocaleDateString(t.history.locale, {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  }
 
   function handleSelectEntry(entry: HistoryEntry) {
     navigation.navigate('Map', { route: encodeRoute(entry) });
-  }
-
-  async function handleShare(entry: HistoryEntry) {
-    try {
-      const outcome = await shareRoute(encodeRoute(entry), t.map.myRoute);
-      if (outcome !== 'copied') return;
-      setCopiedId(entry.id);
-      setTimeout(() => setCopiedId((id) => (id === entry.id ? null : id)), 2000);
-    } catch {
-      showAlert(t.map.share, t.map.shareFailed);
-    }
   }
 
   const header = (
@@ -71,35 +42,12 @@ export default function HistoryScreen() {
       keyExtractor={(item) => item.id}
       ListHeaderComponent={header}
       renderItem={({ item }) => (
-        <TouchableOpacity style={[styles.item, { backgroundColor: c.card }]} onPress={() => handleSelectEntry(item)}>
-          <View style={styles.itemHeader}>
-            <Text style={[styles.itemDate, { color: c.subtext }]}>{formatDate(item.date)}</Text>
-            <View style={styles.itemHeaderRight}>
-              <Text style={[styles.itemType, { color: c.accent }]}>
-                {t.history.routeTypes[item.routeType] ?? item.routeType}
-              </Text>
-              {canShareRoute && (
-                <TouchableOpacity onPress={() => handleShare(item)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                  <Text style={[styles.shareText, { color: c.accent }]}>
-                    {copiedId === item.id ? t.map.linkCopied : t.map.share}
-                  </Text>
-                </TouchableOpacity>
-              )}
-              <TouchableOpacity onPress={() => toggleFavorite(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                <Text style={[styles.star, { color: item.isFavorite ? c.accent : c.muted }]}>
-                  {item.isFavorite ? '★' : '☆'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.itemStats}>
-            <Text style={[styles.itemStat, { color: c.text }]}>{formatDistance(item.distanceMeters)}</Text>
-            <Text style={[styles.itemStatSep, { color: c.muted }]}>·</Text>
-            <Text style={[styles.itemStat, { color: c.text }]}>
-              {item.steps.toLocaleString(t.history.locale)} {t.history.steps}
-            </Text>
-          </View>
-        </TouchableOpacity>
+        <RouteCard
+          entry={item}
+          colors={c}
+          onPress={() => handleSelectEntry(item)}
+          onToggleFavorite={() => toggleFavorite(item.id)}
+        />
       )}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
     />
@@ -110,24 +58,6 @@ const styles = StyleSheet.create({
   list: { flex: 1 },
   listContent: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 24 },
   title: { fontSize: 28, fontWeight: '700', marginBottom: 20 },
-  item: {
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  itemHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  itemHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  itemDate: { fontSize: 13 },
-  itemType: { fontSize: 13, fontWeight: '600' },
-  shareText: { fontSize: 13, fontWeight: '600' },
-  star: { fontSize: 18 },
-  itemStats: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  itemStat: { fontSize: 15, fontWeight: '600' },
-  itemStatSep: { fontSize: 15 },
   separator: { height: 10 },
   empty: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingHorizontal: 24 },
   emptyIcon: { fontSize: 48 },

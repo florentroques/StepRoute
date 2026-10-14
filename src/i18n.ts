@@ -45,6 +45,8 @@ export const translations = {
       empty: 'No routes generated yet',
       steps: 'steps',
       locale: 'en-US',
+      addFavorite: 'Add to favorites',
+      removeFavorite: 'Remove from favorites',
       routeTypes: {
         loop: 'Loop',
         'round-trip': 'Round trip',
@@ -175,6 +177,8 @@ export const translations = {
       empty: "Aucun parcours généré pour l'instant",
       steps: 'pas',
       locale: 'fr-FR',
+      addFavorite: 'Ajouter aux favoris',
+      removeFavorite: 'Retirer des favoris',
       routeTypes: {
         loop: 'Boucle',
         'round-trip': 'Aller-retour',

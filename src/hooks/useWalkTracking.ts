@@ -1,8 +1,8 @@
 import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
-import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, AppState } from 'react-native';
 import { useTranslation } from '../i18n';
+import { requestLocationPermission } from '../services/locationPermission';
 import { LocationFix, LocationWatch, watchLocation } from '../services/locationWatch';
 import { StepSubscription, watchSteps } from '../services/stepCounter';
 import { haversineMeters, heightToStrideLength, metersToSteps } from '../services/stepService';
@@ -95,8 +95,7 @@ export function useWalkTracking() {
     lastFixRef.current = null;
     const strideLength = heightToStrideLength(heightCm);
     await activateKeepAwakeAsync();
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
+    if (!(await requestLocationPermission())) {
       Alert.alert(t.map.locationPermissionDeniedTitle, t.map.locationPermissionDeniedMessage);
     } else {
       setIsFollowingUser(true);

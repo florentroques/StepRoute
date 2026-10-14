@@ -1,9 +1,9 @@
 import * as Location from 'expo-location';
 import { Coordinates } from '../types';
+import { requestLocationPermission } from './locationPermission';
 
 export async function getCurrentLocation(): Promise<Coordinates> {
-  const { status } = await Location.requestForegroundPermissionsAsync();
-  if (status !== 'granted') {
+  if (!(await requestLocationPermission())) {
     throw new Error('Permission de localisation refusée');
   }
 

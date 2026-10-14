@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Coordinates, HistoryEntry, RouteData, RouteType } from '../types';
+import { Coordinates, HistoryEntry, RouteType } from '../types';
 import { heightToStrideLength } from '../services/stepService';
 import { Language } from '../i18n';
 
@@ -12,7 +12,6 @@ interface StoreState {
   heightCm: number;
   routeType: RouteType;
   startLocation: Coordinates | null;
-  routeData: RouteData | null;
   isLoading: boolean;
   error: string | null;
   history: HistoryEntry[];
@@ -27,11 +26,10 @@ interface StoreState {
   setHeightCm: (cm: number) => void;
   setRouteType: (type: RouteType) => void;
   setStartLocation: (coords: Coordinates | null) => void;
-  setRouteData: (data: RouteData | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   addToHistory: (entry: HistoryEntry) => void;
-  replaceLastHistory: (entry: HistoryEntry) => void;
+  updateHistoryEntry: (entry: HistoryEntry) => void;
   toggleFavorite: (id: string) => void;
   setThemePreference: (pref: ThemePreference) => void;
   setLanguage: (lang: Language) => void;
@@ -47,7 +45,6 @@ const defaultState = {
   heightCm: 170,
   routeType: 'loop' as RouteType,
   startLocation: null,
-  routeData: null,
   isLoading: false,
   error: null,
   history: [] as HistoryEntry[],
@@ -68,18 +65,15 @@ export const useStore = create<StoreState>()(
       setHeightCm: (heightCm) => set({ heightCm }),
       setRouteType: (routeType) => set({ routeType }),
       setStartLocation: (startLocation) => set({ startLocation }),
-      setRouteData: (routeData) => set({ routeData }),
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
       addToHistory: (entry) =>
         set((state) => ({
-          history: [entry, ...state.history].slice(0, 20),
+          history: [entry, ...state.history],
         })),
-      replaceLastHistory: (entry) =>
+      updateHistoryEntry: (entry) =>
         set((state) => ({
-          history: state.history.length > 0
-            ? [entry, ...state.history.slice(1)]
-            : [entry],
+          history: state.history.map((e) => (e.id === entry.id ? entry : e)),
         })),
       toggleFavorite: (id) =>
         set((state) => ({

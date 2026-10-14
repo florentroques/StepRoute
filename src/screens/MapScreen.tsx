@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useRef, useState } from 'react';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import RouteInfo from '../components/RouteInfo';
@@ -7,15 +7,20 @@ import RouteMap, { RouteMapHandle } from '../components/RouteMap';
 import { useWalkTracking } from '../hooks/useWalkTracking';
 import { getOptimizedRoute } from '../services/routeService';
 import { heightToStrideLength, stepsToMeters } from '../services/stepService';
+import { decodeRoute, encodeRoute } from '../navigation/routeCodec';
+import type { RootStackParamList } from '../navigation/types';
 import { useStore } from '../store/useStore';
+import { HistoryEntry, RouteData } from '../types';
 import { getColors, useAppScheme } from '../theme';
 import { openInMaps } from '../utils/openInMaps';
 import { showAlert } from '../utils/showAlert';
 import { useTranslation } from '../i18n';
 
 export default function MapScreen() {
-  const { routeData, startLocation, steps, heightCm, routeType, avoidHighways, preferGreen, setRouteData, replaceLastHistory, themePreference } = useStore();
+  const { history, addToHistory, updateHistoryEntry, startLocation, steps, heightCm, avoidHighways, preferGreen, themePreference } = useStore();
   const navigation = useNavigation();
+  const { route: encodedRoute } = useRoute<RouteProp<RootStackParamList, 'Map'>>().params;
+  const shared = decodeRoute(encodedRoute);
   const [regenerating, setRegenerating] = useState(false);
   const [overlayHeight, setOverlayHeight] = useState(220);
   const mapRef = useRef<RouteMapHandle | null>(null);
@@ -26,38 +31,60 @@ export default function MapScreen() {
   const insets = useSafeAreaInsets();
   const t = useTranslation();
 
-  if (!routeData || routeData.geometry.length < 2) return null;
+  // The URL can carry a mistyped or truncated route.
+  useEffect(() => {
+    if (!shared) navigation.reset({ index: 0, routes: [{ name: 'Tabs' }] });
+  }, [shared, navigation]);
+
+  if (!shared) return null;
+  const routeData: RouteData = {
+    geometry: shared.geometry,
+    distanceMeters: shared.distanceMeters,
+    estimatedSteps: shared.steps,
+    ascent: shared.ascent,
+    descent: shared.descent,
+  };
 
   async function handleRegenerate() {
-    if (!startLocation) return;
+    if (!shared) return;
+    // Fall back to the route's own start when the live location is unknown (e.g. shared link).
+    const start = startLocation ?? shared.geometry[0];
     setRegenerating(true);
     try {
       const strideLength = heightToStrideLength(heightCm);
       const distanceM = stepsToMeters(steps, strideLength);
-      const newRoute = await getOptimizedRoute(startLocation, distanceM, routeType, strideLength, avoidHighways, preferGreen);
-      setRouteData(newRoute);
-      replaceLastHistory({
+      const newRoute = await getOptimizedRoute(start, distanceM, shared.routeType, strideLength, avoidHighways, preferGreen);
+      const updated: HistoryEntry = {
         id: Date.now().toString(),
         date: new Date().toISOString(),
-        routeType,
+        routeType: shared.routeType,
         steps,
         distanceMeters: newRoute.distanceMeters,
         geometry: newRoute.geometry,
         ascent: newRoute.ascent,
         descent: newRoute.descent,
-      });
+      };
+      // Replace the history entry being viewed; a shared link not in history is added instead.
+      const current = history.find((e) => encodeRoute(e) === encodedRoute);
+      if (current) updateHistoryEntry({ ...updated, id: current.id, isFavorite: current.isFavorite });
+      else addToHistory(updated);
+      navigation.setParams({ route: encodeRoute(updated) });
     } finally {
       setRegenerating(false);
     }
   }
 
   async function handleOpenInMaps() {
-    if (!routeData) return;
     try {
       await openInMaps(routeData.geometry);
     } catch (e) {
       showAlert('Open in Maps', String(e));
     }
+  }
+
+  function handleNewRoute() {
+    if (navigation.canGoBack()) navigation.goBack();
+    else navigation.reset({ index: 0, routes: [{ name: 'Tabs' }] });
   }
 
   function handleRecenter() {
@@ -147,7 +174,7 @@ export default function MapScreen() {
 
         <TouchableOpacity
           style={[styles.backButton, { backgroundColor: c.card }]}
-          onPress={() => navigation.goBack()}
+          onPress={handleNewRoute}
         >
           <Text style={[styles.backButtonText, { color: c.accent }]}>{t.map.newRoute}</Text>
         </TouchableOpacity>

@@ -2,7 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { Text } from 'react-native';
+import { Platform, Text } from 'react-native';
 import HomeScreen from './src/screens/HomeScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import MapScreen from './src/screens/MapScreen';
@@ -12,6 +12,7 @@ import PrivacyPolicyScreen from './src/screens/PrivacyPolicyScreen';
 import { getColors, useAppScheme } from './src/theme';
 import { useStore } from './src/store/useStore';
 import { useTranslation } from './src/i18n';
+import { linking } from './src/navigation/linking';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -70,7 +71,10 @@ export default function App() {
   const { themePreference } = useStore();
   const scheme = useAppScheme(themePreference);
   return (
-    <NavigationContainer documentTitle={{ enabled: false }}>
+    <NavigationContainer
+      linking={Platform.OS === 'web' ? linking : undefined}
+      documentTitle={{ enabled: false }}
+    >
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Tabs" component={TabNavigator} />

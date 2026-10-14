@@ -16,7 +16,8 @@ import { getCurrentLocation } from '../services/locationService';
 import { AddressSuggestion, searchAddress, suggestAddresses } from '../services/geocodingService';
 import { stepsToMeters, heightToStrideLength } from '../services/stepService';
 import { getOptimizedRoute } from '../services/routeService';
-import { RouteType } from '../types';
+import { encodeRoute } from '../navigation/routeCodec';
+import { HistoryEntry, RouteType } from '../types';
 import { getColors, useAppScheme } from '../theme';
 import { useTranslation } from '../i18n';
 
@@ -35,7 +36,6 @@ export default function HomeScreen() {
     setSteps,
     setRouteType,
     setStartLocation,
-    setRouteData,
     setLoading,
     setError,
     addToHistory,
@@ -147,8 +147,7 @@ export default function HomeScreen() {
         preferGreen,
         (n, max) => setProgressMsg(t.home.optimizing(n, max)),
       );
-      setRouteData(routeData);
-      addToHistory({
+      const entry: HistoryEntry = {
         id: Date.now().toString(),
         date: new Date().toISOString(),
         routeType,
@@ -157,8 +156,9 @@ export default function HomeScreen() {
         geometry: routeData.geometry,
         ascent: routeData.ascent,
         descent: routeData.descent,
-      });
-      navigation.navigate('Map' as never);
+      };
+      addToHistory(entry);
+      navigation.navigate('Map', { route: encodeRoute(entry) });
     } catch (e: unknown) {
       setError(
         e instanceof Error

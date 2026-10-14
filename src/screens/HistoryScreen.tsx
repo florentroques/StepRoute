@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useStore } from '../store/useStore';
+import { encodeRoute } from '../navigation/routeCodec';
 import { HistoryEntry } from '../types';
 import { getColors, useAppScheme } from '../theme';
 import { useTranslation } from '../i18n';
@@ -14,7 +15,7 @@ function formatDistance(meters: number) {
 
 export default function HistoryScreen() {
   const navigation = useNavigation();
-  const { history, setRouteData, toggleFavorite, themePreference } = useStore();
+  const { history, toggleFavorite, themePreference } = useStore();
   const c = getColors(useAppScheme(themePreference));
   const insets = useSafeAreaInsets();
   const t = useTranslation();
@@ -31,12 +32,7 @@ export default function HistoryScreen() {
   }
 
   function handleSelectEntry(entry: HistoryEntry) {
-    setRouteData({
-      geometry: entry.geometry,
-      distanceMeters: entry.distanceMeters,
-      estimatedSteps: entry.steps,
-    });
-    navigation.navigate('Map' as never);
+    navigation.navigate('Map', { route: encodeRoute(entry) });
   }
 
   const header = (

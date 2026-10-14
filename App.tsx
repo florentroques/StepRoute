@@ -70,7 +70,7 @@ export default function App() {
   const { themePreference } = useStore();
   const scheme = useAppScheme(themePreference);
   return (
-    <NavigationContainer>
+    <NavigationContainer documentTitle={{ enabled: false }}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Tabs" component={TabNavigator} />

@@ -101,6 +101,7 @@ export default function RouteCard({
               >
                 <Text style={[styles.shareText, { color: c.accent }]} aria-live="polite">
                   {linkCopied ? t.map.linkCopied : t.map.share}
+                  {linkCopied && <Text aria-hidden> ✓</Text>}
                 </Text>
               </TouchableOpacity>
             )}

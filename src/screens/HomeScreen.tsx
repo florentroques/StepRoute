@@ -227,6 +227,7 @@ export default function HomeScreen() {
                 { color: usingCurrentLocation ? c.onAccent : c.accent },
               ]}
             >
+              {usingCurrentLocation && <Text aria-hidden>✓ </Text>}
               {usingCurrentLocation ? t.home.locationActive : t.home.useLocation}
             </Text>
           </TouchableOpacity>

@@ -95,7 +95,7 @@ export default function MapScreen() {
     }
   }
 
-  function handleNewRoute() {
+  function handleBack() {
     if (navigation.canGoBack()) navigation.goBack();
     else navigation.reset({ index: 0, routes: [{ name: 'Tabs' }] });
   }
@@ -191,23 +191,23 @@ export default function MapScreen() {
                 <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card, borderColor: c.controlBorder }]} onPress={handleShare}>
                   <Text style={[styles.actionButtonText, { color: c.accent }]} aria-live="polite">
                     {linkCopied ? t.map.linkCopied : t.map.share}
+                    {linkCopied && <Text aria-hidden> ✓</Text>}
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
           </>
         )}
-
-        <TouchableOpacity
-          style={[styles.backButton, { backgroundColor: c.card, borderColor: c.controlBorder }]}
-          onPress={handleNewRoute}
-        >
-          <Text style={[styles.backButtonText, { color: c.accent }]}>
-            <Text aria-hidden>← </Text>
-            {t.map.newRoute}
-          </Text>
-        </TouchableOpacity>
       </View>
+
+      <TouchableOpacity
+        style={[styles.backButton, { backgroundColor: c.card, borderColor: c.controlBorder, top: insets.top + 12 }]}
+        onPress={handleBack}
+        accessibilityLabel={t.map.back}
+        role="button"
+      >
+        <Text aria-hidden style={[styles.backIcon, { color: c.accent }]}>←</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -279,15 +279,18 @@ const styles = StyleSheet.create({
   },
   backButton: {
     borderWidth: 1,
-    borderRadius: 12,
-    paddingVertical: 9,
-    paddingHorizontal: 20,
+    position: 'absolute',
+    left: 16,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.15,
     shadowRadius: 4,
-    elevation: 4,
+    elevation: 5,
   },
-  backButtonText: { fontSize: 15, fontWeight: '500' },
+  backIcon: { fontSize: 22, lineHeight: 24 },
 });

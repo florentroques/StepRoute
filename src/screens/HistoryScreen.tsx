@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,8 @@ import { encodeRoute } from '../navigation/routeCodec';
 import { HistoryEntry } from '../types';
 import { getColors, useAppScheme } from '../theme';
 import { useTranslation } from '../i18n';
+import { canShareRoute, shareRoute } from '../utils/shareRoute';
+import { showAlert } from '../utils/showAlert';
 
 function formatDistance(meters: number) {
   if (meters >= 1000) return `${(meters / 1000).toFixed(1)} km`;
@@ -19,6 +21,7 @@ export default function HistoryScreen() {
   const c = getColors(useAppScheme(themePreference));
   const insets = useSafeAreaInsets();
   const t = useTranslation();
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   function formatDate(iso: string) {
     const d = new Date(iso);
@@ -33,6 +36,17 @@ export default function HistoryScreen() {
 
   function handleSelectEntry(entry: HistoryEntry) {
     navigation.navigate('Map', { route: encodeRoute(entry) });
+  }
+
+  async function handleShare(entry: HistoryEntry) {
+    try {
+      const outcome = await shareRoute(encodeRoute(entry), t.map.myRoute);
+      if (outcome !== 'copied') return;
+      setCopiedId(entry.id);
+      setTimeout(() => setCopiedId((id) => (id === entry.id ? null : id)), 2000);
+    } catch {
+      showAlert(t.map.share, t.map.shareFailed);
+    }
   }
 
   const header = (
@@ -64,6 +78,13 @@ export default function HistoryScreen() {
               <Text style={[styles.itemType, { color: c.accent }]}>
                 {t.history.routeTypes[item.routeType] ?? item.routeType}
               </Text>
+              {canShareRoute && (
+                <TouchableOpacity onPress={() => handleShare(item)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Text style={[styles.shareText, { color: c.accent }]}>
+                    {copiedId === item.id ? t.map.linkCopied : t.map.share}
+                  </Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity onPress={() => toggleFavorite(item.id)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
                 <Text style={[styles.star, { color: item.isFavorite ? c.accent : c.muted }]}>
                   {item.isFavorite ? '★' : '☆'}
@@ -102,6 +123,7 @@ const styles = StyleSheet.create({
   itemHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   itemDate: { fontSize: 13 },
   itemType: { fontSize: 13, fontWeight: '600' },
+  shareText: { fontSize: 13, fontWeight: '600' },
   star: { fontSize: 18 },
   itemStats: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   itemStat: { fontSize: 15, fontWeight: '600' },

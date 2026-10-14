@@ -64,6 +64,8 @@ On web, `src/navigation/linking.ts` maps screens to paths, so the address bar, b
 
 A route URL is self-contained: `/route/<type>~<steps>~<meters>~<ascent>~<descent>~<path>`. `<type>` is `l`, `o` or `r` (loop, one-way, round-trip). The numbers are rounded integers, and `ascent`/`descent` may be empty. `<path>` is the geometry as polyline-style deltas at 1e-5° (about 1 m) in the URL-safe base64 alphabet, roughly 3 characters per point. A link therefore opens on any device or browser without needing the sender's history. An invalid or truncated URL redirects to Home.
 
+The Map screen has a **Share** button on web (`src/utils/shareRoute.web.ts`). It shares `<origin>/route/<encoded route>` through the browser's share sheet (`navigator.share`) and falls back to copying the link to the clipboard, where the button briefly reads "Link copied". The button is hidden on native, which has no web origin to link to.
+
 Regenerating replaces the matching history entry (or adds one if the link was not in history) and updates the URL. Very long routes produce long URLs, so servers or chat apps with tight URL limits may truncate them.
 
 ## State Model

@@ -54,6 +54,9 @@ export const translations = {
     map: {
       regenerate: 'Regenerate',
       openInMaps: 'Open in Maps',
+      share: 'Share',
+      linkCopied: 'Link copied ✓',
+      shareFailed: 'Unable to share this route',
       newRoute: '← New route',
       myRoute: 'My route',
       recenter: 'Recenter on route',
@@ -181,6 +184,9 @@ export const translations = {
     map: {
       regenerate: 'Regénérer',
       openInMaps: 'Ouvrir dans Maps',
+      share: 'Partager',
+      linkCopied: 'Lien copié ✓',
+      shareFailed: 'Impossible de partager ce parcours',
       newRoute: '← Nouveau parcours',
       myRoute: 'Mon parcours',
       recenter: 'Recentrer sur le parcours',

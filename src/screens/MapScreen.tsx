@@ -13,6 +13,7 @@ import { useStore } from '../store/useStore';
 import { HistoryEntry, RouteData } from '../types';
 import { getColors, useAppScheme } from '../theme';
 import { openInMaps } from '../utils/openInMaps';
+import { canShareRoute, shareRoute } from '../utils/shareRoute';
 import { showAlert } from '../utils/showAlert';
 import { useTranslation } from '../i18n';
 
@@ -22,6 +23,7 @@ export default function MapScreen() {
   const { route: encodedRoute } = useRoute<RouteProp<RootStackParamList, 'Map'>>().params;
   const shared = decodeRoute(encodedRoute);
   const [regenerating, setRegenerating] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [overlayHeight, setOverlayHeight] = useState(220);
   const mapRef = useRef<RouteMapHandle | null>(null);
   const { isTracking, liveSteps, userPosition, isFollowingUser, startWalk, stopWalk, followUser, handleUserInteraction } = useWalkTracking();
@@ -79,6 +81,17 @@ export default function MapScreen() {
       await openInMaps(routeData.geometry);
     } catch (e) {
       showAlert('Open in Maps', String(e));
+    }
+  }
+
+  async function handleShare() {
+    try {
+      const outcome = await shareRoute(encodedRoute, t.map.myRoute);
+      if (outcome !== 'copied') return;
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch {
+      showAlert(t.map.share, t.map.shareFailed);
     }
   }
 
@@ -166,9 +179,19 @@ export default function MapScreen() {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={[styles.actionButton, styles.openMapsButton, { backgroundColor: c.card }]} onPress={handleOpenInMaps}>
-              <Text style={[styles.actionButtonText, { color: c.accent }]}>{t.map.openInMaps}</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card }]} onPress={handleOpenInMaps}>
+                <Text style={[styles.actionButtonText, { color: c.accent }]}>{t.map.openInMaps}</Text>
+              </TouchableOpacity>
+
+              {canShareRoute && (
+                <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card }]} onPress={handleShare}>
+                  <Text style={[styles.actionButtonText, { color: c.accent }]}>
+                    {linkCopied ? t.map.linkCopied : t.map.share}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </>
         )}
 
@@ -236,7 +259,6 @@ const styles = StyleSheet.create({
   },
   stepCounterNumber: { fontSize: 28, fontWeight: '700', lineHeight: 32 },
   stepCounterLabel: { fontSize: 12, fontWeight: '500', marginTop: 2 },
-  openMapsButton: { flex: undefined },
   stopButton: {
     borderRadius: 12,
     paddingVertical: 9,

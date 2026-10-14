@@ -30,6 +30,7 @@ npx expo export -p web    # static build in dist/
 - Installing the app and geolocation need HTTPS; `localhost` counts as secure.
 - First visit cannot work offline: the worker caches the bundle from the second load. Bump `VERSION` in `public/sw.js` to drop old caches.
 - Deploy `dist/` from the site root on any static host. Cloudflare Pages is one example: build command `npx expo export -p web`, output directory `dist`.
+- `.github/workflows/web.yml` type-checks, lints and builds on every push and pull request, and deploys `dist/` to the `steproute` Cloudflare Pages project on pushes to `main`. The Pages project uses direct upload (no Git provider), so this workflow is the deploy. It needs the repository secrets `CLOUDFLARE_API_TOKEN` (permission: Account > Cloudflare Pages > Edit) and `CLOUDFLARE_ACCOUNT_ID`. To deploy by hand: `npx expo export -p web && npx wrangler pages deploy dist --project-name=steproute --branch=main`.
 - Routes are shared as `/route/<encoded route>` URLs; the format is documented in `docs/ARCHITECTURE.md` and implemented in `src/navigation/routeCodec.ts`. Reload on any path works because the host serves `index.html` for unknown paths (Cloudflare Pages does by default).
 - Native alerts are not available through React Native Web, so `src/utils/showAlert.web.ts` uses `window.alert`.
 

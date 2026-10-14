@@ -23,7 +23,7 @@ export default function FavoritesScreen() {
   }
 
   const header = (
-    <Text style={[styles.title, { color: c.text, marginTop: insets.top + 8 }]}>{t.favorites.title}</Text>
+    <Text role="heading" aria-level={1} style={[styles.title, { color: c.text, marginTop: insets.top + 8 }]}>{t.favorites.title}</Text>
   );
 
   if (favorites.length === 0) {

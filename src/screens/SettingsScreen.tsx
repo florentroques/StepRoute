@@ -56,11 +56,11 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: c.bg }]} contentContainerStyle={styles.inner}>
-      <Text style={[styles.title, { color: c.text }]}>{t.settings.title}</Text>
+      <Text role="heading" aria-level={1} style={[styles.title, { color: c.text }]}>{t.settings.title}</Text>
 
       {/* Appearance */}
       <View role="group" aria-labelledby="settings-appearance" style={[styles.card, { backgroundColor: c.card }]}>
-        <Text nativeID="settings-appearance" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.appearance}</Text>
+        <Text nativeID="settings-appearance" style={[styles.sectionTitle, { color: c.muted }]} role="heading" aria-level={2}>{t.settings.appearance}</Text>
 
         <View style={styles.field}>
           <Text nativeID="settings-theme-label" style={[styles.label, { color: c.text }]}>{t.settings.theme}</Text>
@@ -91,7 +91,7 @@ export default function SettingsScreen() {
 
       {/* Profile */}
       <View role="group" aria-labelledby="settings-profile" style={[styles.card, { backgroundColor: c.card }]}>
-        <Text nativeID="settings-profile" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.profile}</Text>
+        <Text nativeID="settings-profile" style={[styles.sectionTitle, { color: c.muted }]} role="heading" aria-level={2}>{t.settings.profile}</Text>
 
         <View style={styles.field}>
           <Text nativeID="settings-height-label" style={[styles.label, { color: c.text }]}>{t.settings.height}</Text>
@@ -124,7 +124,7 @@ export default function SettingsScreen() {
 
       {/* Route preferences */}
       <View role="group" aria-labelledby="settings-routes" style={[styles.card, { backgroundColor: c.card }]}>
-        <Text nativeID="settings-routes" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.parcours}</Text>
+        <Text nativeID="settings-routes" style={[styles.sectionTitle, { color: c.muted }]} role="heading" aria-level={2}>{t.settings.parcours}</Text>
 
         <View style={styles.field}>
           <Text nativeID="settings-highways-label" style={[styles.label, { color: c.text }]}>{t.settings.avoidHighways}</Text>
@@ -155,7 +155,7 @@ export default function SettingsScreen() {
 
       {/* Legal */}
       <View role="group" aria-labelledby="settings-legal" style={[styles.card, { backgroundColor: c.card }]}>
-        <Text nativeID="settings-legal" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.legal}</Text>
+        <Text nativeID="settings-legal" style={[styles.sectionTitle, { color: c.muted }]} role="heading" aria-level={2}>{t.settings.legal}</Text>
         <TouchableOpacity
           style={styles.linkRow}
           onPress={() => navigation.navigate('PrivacyPolicy' as never)}

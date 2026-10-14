@@ -18,12 +18,12 @@ export default function PrivacyPolicyScreen() {
         <Text style={[styles.backText, { color: c.accent }]}>← {t.settings.privacyPolicy}</Text>
       </TouchableOpacity>
 
-      <Text style={[styles.title, { color: c.text }]}>{t.privacy.title}</Text>
+      <Text role="heading" aria-level={1} style={[styles.title, { color: c.text }]}>{t.privacy.title}</Text>
       <Text style={[styles.lastUpdated, { color: c.muted }]}>{t.privacy.lastUpdated}</Text>
 
       {t.privacy.sections.map((section, index) => (
         <View key={index} style={styles.section}>
-          <Text style={[styles.heading, { color: c.text }]}>{section.heading}</Text>
+          <Text role="heading" aria-level={2} style={[styles.heading, { color: c.text }]}>{section.heading}</Text>
           <Text style={[styles.body, { color: c.subtext }]}>{section.body}</Text>
         </View>
       ))}

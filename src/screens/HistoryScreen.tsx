@@ -21,7 +21,7 @@ export default function HistoryScreen() {
   }
 
   const header = (
-    <Text style={[styles.title, { color: c.text, marginTop: insets.top + 8 }]}>{t.history.title}</Text>
+    <Text role="heading" aria-level={1} style={[styles.title, { color: c.text, marginTop: insets.top + 8 }]}>{t.history.title}</Text>
   );
 
   if (history.length === 0) {

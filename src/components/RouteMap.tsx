@@ -2,18 +2,16 @@ import MapLibreGL, { CameraRef } from '@maplibre/maplibre-react-native';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Coordinates, LngLat } from '../types';
+import { getMapStyleUrl } from './mapStyles';
 
 MapLibreGL.setAccessToken(null);
-
-const STYLE_URL_LIGHT = 'https://tiles.openfreemap.org/styles/liberty';
-const STYLE_URL_DARK = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
 export interface RouteMapHandle {
   /** Frames the whole route above the bottom overlay. */
   fitRoute(): void;
 }
 
-interface RouteMapProps {
+export interface RouteMapProps {
   geometry: Coordinates[];
   dark: boolean;
   accentColor: string;
@@ -86,7 +84,7 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
   return (
     <MapLibreGL.MapView
       style={StyleSheet.absoluteFill}
-      mapStyle={dark ? STYLE_URL_DARK : STYLE_URL_LIGHT}
+      mapStyle={getMapStyleUrl(dark)}
       rotateEnabled={true}
       compassEnabled={true}
       compassViewPosition={3}

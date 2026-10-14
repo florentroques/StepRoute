@@ -110,6 +110,22 @@ The Worker owns provider-specific routing behavior and keeps provider secrets ou
 - `geocodingService.ts` handles address search through Nominatim.
 - Screens use services instead of calling external APIs directly.
 
+## Web Platform
+
+Web support uses Metro's platform extensions: a `.web.ts(x)` file replaces its native sibling when bundling for web, and both expose the same interface.
+
+| Module | Web implementation |
+| --- | --- |
+| `src/components/RouteMap.web.tsx` | Renders the route with `maplibre-gl` instead of the native MapLibre view |
+| `src/services/stepCounter.web.ts` | No pedometer; live steps are estimated from GPS |
+| `src/services/locationWatch.web.ts` | Location updates through `navigator.geolocation` |
+| `src/services/locationPermission.web.ts` | Permission requests through the browser |
+| `src/utils/showAlert.web.ts` | `window.alert`, since React Native Web's `Alert` is a no-op |
+
+The PWA layer lives in `public/`: `index.html` (manifest link, iOS meta tags, service worker registration), `manifest.webmanifest`, `icons/`, and `sw.js`.
+
+The service worker is network-first for the page with the cached shell as offline fallback, cache-first for hashed build files, and always uses the network for map tiles, routing and geocoding. Installing and geolocation require HTTPS, and the app must be served from the site root.
+
 ## Theming And Localization
 
 - `src/theme.ts` resolves system/light/dark color schemes and exposes color tokens.

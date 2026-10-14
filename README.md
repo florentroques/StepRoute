@@ -123,6 +123,20 @@ Type-check:
 pnpm exec tsc --noEmit
 ```
 
+## Web / PWA
+
+The app also runs in the browser and can be installed as a PWA.
+
+```bash
+pnpm web                     # dev server on http://localhost:8081
+npx expo export -p web       # static build in dist/
+```
+
+- The static build can be hosted on any static host (for example Cloudflare Pages, with `dist` as the output directory). It must be served from the site root, because the manifest uses `/` paths.
+- Installing and geolocation both require HTTPS (`localhost` is exempt).
+- Offline: after a second load, the service worker serves the app shell and hashed build files from cache. Map tiles, routing and geocoding always need a network connection.
+- Without a pedometer, live steps are estimated from GPS.
+
 ## Route Generation
 
 1. Convert the target step count to meters using the configured stride length.

@@ -19,6 +19,19 @@ pnpm exec tsc --noEmit
 
 No test runner is currently configured. TypeScript validation is the main automated check.
 
+## Web / PWA
+
+```bash
+pnpm web                  # expo start --web, served on http://localhost:8081
+npx expo export -p web    # static build in dist/
+```
+
+- Preview the export with any static server (for example `npx serve dist`) to test the service worker; the dev server registers it too but has no hashed files to cache.
+- Installing the app and geolocation need HTTPS; `localhost` counts as secure.
+- First visit cannot work offline: the worker caches the bundle from the second load. Bump `VERSION` in `public/sw.js` to drop old caches.
+- Deploy `dist/` from the site root on any static host. Cloudflare Pages is one example: build command `npx expo export -p web`, output directory `dist`.
+- Native alerts are not available through React Native Web, so `src/utils/showAlert.web.ts` uses `window.alert`.
+
 ## Formatting And Linting
 
 - ESLint uses the flat config in `eslint.config.js`.

@@ -50,6 +50,10 @@ export const translations = {
       locale: 'en-US',
       addFavorite: 'Add to favorites',
       removeFavorite: 'Remove from favorites',
+      delete: 'Delete route',
+      deleteTitle: 'Delete this route?',
+      deleteMessage: 'It will be removed from your history and favorites.',
+      cancel: 'Cancel',
       routeTypes: {
         loop: 'Loop',
         'round-trip': 'Round trip',
@@ -187,6 +191,10 @@ export const translations = {
       locale: 'fr-FR',
       addFavorite: 'Ajouter aux favoris',
       removeFavorite: 'Retirer des favoris',
+      delete: 'Supprimer le parcours',
+      deleteTitle: 'Supprimer ce parcours ?',
+      deleteMessage: 'Il sera retiré de votre historique et de vos favoris.',
+      cancel: 'Annuler',
       routeTypes: {
         loop: 'Boucle',
         'round-trip': 'Aller-retour',

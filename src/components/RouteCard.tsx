@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { HistoryEntry } from '../types';
+import { useStore } from '../store/useStore';
 import { getColors } from '../theme';
 import { useTranslation } from '../i18n';
 import { encodeRoute } from '../navigation/routeCodec';
 import { canShareRoute, shareRoute } from '../utils/shareRoute';
 import { showAlert } from '../utils/showAlert';
+import { confirmAction } from '../utils/confirmAction';
 
 interface Props {
   entry: HistoryEntry;
@@ -28,6 +30,7 @@ export default function RouteCard({
   const t = useTranslation();
   const [linkCopied, setLinkCopied] = useState(false);
   const [focused, setFocused] = useState(false);
+  const removeFromHistory = useStore((state) => state.removeFromHistory);
 
   const date = new Date(entry.date).toLocaleDateString(t.history.locale, {
     day: '2-digit',
@@ -46,6 +49,16 @@ export default function RouteCard({
     } catch {
       showAlert(t.map.share, t.map.shareFailed);
     }
+  }
+
+  async function handleRemove() {
+    const confirmed = await confirmAction(
+      t.history.deleteTitle,
+      t.history.deleteMessage,
+      t.history.delete,
+      t.history.cancel,
+    );
+    if (confirmed) removeFromHistory(entry.id);
   }
 
   const typeLabel = t.history.routeTypes[entry.routeType] ?? entry.routeType;
@@ -107,7 +120,7 @@ export default function RouteCard({
             )}
             <TouchableOpacity
               style={[
-                styles.favoriteButton,
+                styles.iconButton,
                 {
                   backgroundColor: entry.isFavorite ? c.cardAlt : c.card,
                   borderColor: entry.isFavorite ? c.accent : c.controlBorder,
@@ -125,6 +138,19 @@ export default function RouteCard({
                 aria-hidden
               >
                 {entry.isFavorite ? '★' : '☆'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.iconButton,
+                { backgroundColor: c.card, borderColor: c.controlBorder },
+              ]}
+              onPress={handleRemove}
+              accessibilityRole="button"
+              accessibilityLabel={t.history.delete}
+            >
+              <Text style={[styles.deleteIcon, { color: c.danger }]} aria-hidden>
+                ✕
               </Text>
             </TouchableOpacity>
           </View>
@@ -183,7 +209,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   shareText: { fontSize: 13, fontWeight: '600' },
-  favoriteButton: {
+  iconButton: {
     width: 40,
     height: 40,
     alignItems: 'center',
@@ -192,4 +218,5 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   star: { fontSize: 20 },
+  deleteIcon: { fontSize: 16, fontWeight: '700' },
 });

@@ -182,7 +182,7 @@ export default function HomeScreen() {
       behavior="padding"
     >
       <ScrollView ref={scrollViewRef} contentContainerStyle={styles.inner} keyboardShouldPersistTaps="handled">
-        <Text style={[styles.title, { color: c.text }]}>StepRoute</Text>
+        <Text role="heading" aria-level={1} style={[styles.title, { color: c.text }]}>StepRoute</Text>
         <Text style={[styles.subtitle, { color: c.subtext }]}>{t.home.subtitle}</Text>
 
         <View style={styles.section}>

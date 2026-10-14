@@ -31,6 +31,7 @@ interface StoreState {
   addToHistory: (entry: HistoryEntry) => void;
   updateHistoryEntry: (entry: HistoryEntry) => void;
   toggleFavorite: (id: string) => void;
+  removeFromHistory: (id: string) => void;
   setThemePreference: (pref: ThemePreference) => void;
   setLanguage: (lang: Language) => void;
   setAvoidHighways: (v: boolean) => void;
@@ -80,6 +81,10 @@ export const useStore = create<StoreState>()(
           history: state.history.map((e) =>
             e.id === id ? { ...e, isFavorite: !e.isFavorite } : e
           ),
+        })),
+      removeFromHistory: (id) =>
+        set((state) => ({
+          history: state.history.filter((e) => e.id !== id),
         })),
       setThemePreference: (themePreference) => set({ themePreference }),
       setLanguage: (language) => set({ language }),

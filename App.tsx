@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -75,6 +76,14 @@ function TabNavigator() {
 export default function App() {
   const { themePreference } = useStore();
   const scheme = useAppScheme(themePreference);
+  const { tabBar } = getColors(scheme);
+
+  // Any gap below the app (e.g. when the mobile URL bar resizes the viewport) shows the
+  // page background, so keep it in the tab bar's colour instead of the browser's white.
+  useEffect(() => {
+    if (Platform.OS === 'web') document.documentElement.style.backgroundColor = tabBar;
+  }, [tabBar]);
+
   return (
     <NavigationContainer
       linking={Platform.OS === 'web' ? linking : undefined}

@@ -320,8 +320,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  inner: { padding: 24, paddingBottom: 40 },
-  title: { fontSize: 32, fontWeight: '700', marginBottom: 4, marginTop: 40 },
+  inner: { padding: 24, paddingBottom: 40, ...(Platform.OS === 'web' && { paddingTop: 12 }) },
+  // The 40 px clears the native status bar; a browser has no status bar to clear.
+  title: { fontSize: 32, fontWeight: '700', marginBottom: 4, marginTop: Platform.OS === 'web' ? 0 : 40 },
   subtitle: { fontSize: 15, marginBottom: 32 },
   section: { marginBottom: 22 },
   label: { fontSize: 13, fontWeight: '600', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 },

@@ -44,7 +44,7 @@ function TabNavigator() {
         component={HomeScreen}
         options={{
           tabBarLabel: t.tabs.home,
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>🗺️</Text>,
+          tabBarIcon: ({ color }) => <Text aria-hidden style={{ fontSize: 18, color }}>🗺️</Text>,
         }}
       />
       <Tab.Screen
@@ -52,7 +52,7 @@ function TabNavigator() {
         component={HistoryScreen}
         options={{
           tabBarLabel: t.tabs.history,
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>📋</Text>,
+          tabBarIcon: ({ color }) => <Text aria-hidden style={{ fontSize: 18, color }}>📋</Text>,
         }}
       />
       <Tab.Screen
@@ -60,7 +60,7 @@ function TabNavigator() {
         component={FavoritesScreen}
         options={{
           tabBarLabel: t.tabs.favorites,
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>⭐</Text>,
+          tabBarIcon: ({ color }) => <Text aria-hidden style={{ fontSize: 18, color }}>⭐</Text>,
         }}
       />
       <Tab.Screen
@@ -68,7 +68,7 @@ function TabNavigator() {
         component={SettingsScreen}
         options={{
           tabBarLabel: t.tabs.settings,
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>⚙️</Text>,
+          tabBarIcon: ({ color }) => <Text aria-hidden style={{ fontSize: 18, color }}>⚙️</Text>,
         }}
       />
     </Tab.Navigator>

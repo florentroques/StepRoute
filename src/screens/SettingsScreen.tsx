@@ -12,6 +12,7 @@ import { useStore, ThemePreference } from '../store/useStore';
 import { heightToStrideLength } from '../services/stepService';
 import { getColors, useAppScheme } from '../theme';
 import { useTranslation, Language } from '../i18n';
+import SegmentedControl from '../components/SegmentedControl';
 
 export default function SettingsScreen() {
   const navigation = useNavigation();
@@ -40,6 +41,11 @@ export default function SettingsScreen() {
     { label: t.settings.languages.fr, value: 'fr' },
   ];
 
+  const ON_OFF_OPTIONS: { label: string; value: 'on' | 'off' }[] = [
+    { label: t.settings.off, value: 'off' },
+    { label: t.settings.on, value: 'on' },
+  ];
+
   function handleHeightChange(text: string) {
     setHeightInput(text);
     const parsed = parseInt(text, 10);
@@ -53,76 +59,53 @@ export default function SettingsScreen() {
       <Text style={[styles.title, { color: c.text }]}>{t.settings.title}</Text>
 
       {/* Appearance */}
-      <View style={[styles.card, { backgroundColor: c.card }]}>
-        <Text style={[styles.sectionTitle, { color: c.muted }]}>{t.settings.appearance}</Text>
+      <View role="group" aria-labelledby="settings-appearance" style={[styles.card, { backgroundColor: c.card }]}>
+        <Text nativeID="settings-appearance" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.appearance}</Text>
 
         <View style={styles.field}>
-          <Text style={[styles.label, { color: c.text }]}>{t.settings.theme}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
-            {THEME_OPTIONS.map((opt) => (
-              <TouchableOpacity
-                key={opt.value}
-                style={[styles.segment, themePreference === opt.value && { backgroundColor: c.card, borderColor: c.accent }]}
-                onPress={() => setThemePreference(opt.value)}
-              >
-                <Text
-                  style={[
-                    styles.segmentText,
-                    { color: c.muted },
-                    themePreference === opt.value && { color: c.text, fontWeight: '600' },
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Text nativeID="settings-theme-label" style={[styles.label, { color: c.text }]}>{t.settings.theme}</Text>
+          <SegmentedControl
+            labelledBy="settings-theme-label"
+            options={THEME_OPTIONS}
+            value={themePreference}
+            onChange={setThemePreference}
+            colors={c}
+          />
         </View>
 
         <View style={[styles.divider, { backgroundColor: c.separator }]} />
 
         <View style={styles.field}>
-          <Text style={[styles.label, { color: c.text }]}>{t.settings.language}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
-            {LANGUAGE_OPTIONS.map((opt) => (
-              <TouchableOpacity
-                key={opt.value}
-                style={[styles.segment, language === opt.value && { backgroundColor: c.card, borderColor: c.accent }]}
-                onPress={() => setLanguage(opt.value)}
-              >
-                <Text
-                  style={[
-                    styles.segmentText,
-                    { color: c.muted },
-                    language === opt.value && { color: c.text, fontWeight: '600' },
-                  ]}
-                >
-                  {opt.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Text nativeID="settings-language-label" style={[styles.label, { color: c.text }]}>{t.settings.language}</Text>
+          <SegmentedControl
+            labelledBy="settings-language-label"
+            options={LANGUAGE_OPTIONS}
+            value={language}
+            onChange={setLanguage}
+            colors={c}
+          />
         </View>
       </View>
 
       <View style={styles.cardGap} />
 
       {/* Profile */}
-      <View style={[styles.card, { backgroundColor: c.card }]}>
-        <Text style={[styles.sectionTitle, { color: c.muted }]}>{t.settings.profile}</Text>
+      <View role="group" aria-labelledby="settings-profile" style={[styles.card, { backgroundColor: c.card }]}>
+        <Text nativeID="settings-profile" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.profile}</Text>
 
         <View style={styles.field}>
-          <Text style={[styles.label, { color: c.text }]}>{t.settings.height}</Text>
+          <Text nativeID="settings-height-label" style={[styles.label, { color: c.text }]}>{t.settings.height}</Text>
           <View style={styles.inputRow}>
             <TextInput
               style={[styles.input, { backgroundColor: c.cardAlt, color: c.text, borderColor: c.controlBorder }]}
               value={heightInput}
               onChangeText={handleHeightChange}
               keyboardType="numeric"
+              aria-labelledby="settings-height-label"
               placeholder="170"
               placeholderTextColor={c.muted}
             />
-            <Text style={[styles.unit, { color: c.subtext }]}>cm</Text>
+            <Text style={[styles.unit, { color: c.subtext }]} aria-hidden>cm</Text>
           </View>
         </View>
 
@@ -140,69 +123,45 @@ export default function SettingsScreen() {
       <View style={styles.cardGap} />
 
       {/* Route preferences */}
-      <View style={[styles.card, { backgroundColor: c.card }]}>
-        <Text style={[styles.sectionTitle, { color: c.muted }]}>{t.settings.parcours}</Text>
+      <View role="group" aria-labelledby="settings-routes" style={[styles.card, { backgroundColor: c.card }]}>
+        <Text nativeID="settings-routes" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.parcours}</Text>
 
         <View style={styles.field}>
-          <Text style={[styles.label, { color: c.text }]}>{t.settings.avoidHighways}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
-            {([false, true] as const).map((val) => (
-              <TouchableOpacity
-                key={String(val)}
-                style={[styles.segment, avoidHighways === val && { backgroundColor: c.card, borderColor: c.accent }]}
-                onPress={() => setAvoidHighways(val)}
-              >
-                <Text
-                  style={[
-                    styles.segmentText,
-                    { color: c.muted },
-                    avoidHighways === val && { color: c.text, fontWeight: '600' },
-                  ]}
-                >
-                  {val ? 'On' : 'Off'}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Text nativeID="settings-highways-label" style={[styles.label, { color: c.text }]}>{t.settings.avoidHighways}</Text>
+          <SegmentedControl
+            labelledBy="settings-highways-label"
+            options={ON_OFF_OPTIONS}
+            value={avoidHighways ? 'on' : 'off'}
+            onChange={(v) => setAvoidHighways(v === 'on')}
+            colors={c}
+          />
         </View>
 
         <View style={[styles.divider, { backgroundColor: c.separator }]} />
 
         <View style={styles.field}>
-          <Text style={[styles.label, { color: c.text }]}>{t.settings.preferGreen}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
-            {([false, true] as const).map((val) => (
-              <TouchableOpacity
-                key={String(val)}
-                style={[styles.segment, preferGreen === val && { backgroundColor: c.card, borderColor: c.accent }]}
-                onPress={() => setPreferGreen(val)}
-              >
-                <Text
-                  style={[
-                    styles.segmentText,
-                    { color: c.muted },
-                    preferGreen === val && { color: c.text, fontWeight: '600' },
-                  ]}
-                >
-                  {val ? 'On' : 'Off'}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Text nativeID="settings-green-label" style={[styles.label, { color: c.text }]}>{t.settings.preferGreen}</Text>
+          <SegmentedControl
+            labelledBy="settings-green-label"
+            options={ON_OFF_OPTIONS}
+            value={preferGreen ? 'on' : 'off'}
+            onChange={(v) => setPreferGreen(v === 'on')}
+            colors={c}
+          />
         </View>
       </View>
 
       <View style={styles.cardGap} />
 
       {/* Legal */}
-      <View style={[styles.card, { backgroundColor: c.card }]}>
-        <Text style={[styles.sectionTitle, { color: c.muted }]}>{t.settings.legal}</Text>
+      <View role="group" aria-labelledby="settings-legal" style={[styles.card, { backgroundColor: c.card }]}>
+        <Text nativeID="settings-legal" style={[styles.sectionTitle, { color: c.muted }]} role="heading">{t.settings.legal}</Text>
         <TouchableOpacity
           style={styles.linkRow}
           onPress={() => navigation.navigate('PrivacyPolicy' as never)}
         >
           <Text style={[styles.linkText, { color: c.text }]}>{t.settings.privacyPolicy}</Text>
-          <Text style={[styles.chevron, { color: c.muted }]}>›</Text>
+          <Text style={[styles.chevron, { color: c.muted }]} aria-hidden>›</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -226,9 +185,6 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16 },
   field: { marginBottom: 4 },
   label: { fontSize: 15, fontWeight: '500', marginBottom: 8 },
-  segmented: { flexDirection: 'row', borderRadius: 10, padding: 3, borderWidth: 1 },
-  segment: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, borderWidth: 2, borderColor: 'transparent' },
-  segmentText: { fontSize: 13, fontWeight: '500' },
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   input: {
     borderRadius: 10,

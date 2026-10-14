@@ -17,7 +17,7 @@ export default function RouteInfo({ routeData }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: c.card }]}>
       <Text style={[styles.text, { color: c.text }]}>
-        {km} km · ~{routeData.estimatedSteps.toLocaleString()} pas
+        {km} km<Text aria-hidden> · </Text>~{routeData.estimatedSteps.toLocaleString(t.history.locale)} {t.history.steps}
       </Text>
       {routeData.ascent != null && routeData.descent != null && (
         <Text style={[styles.sub, { color: c.subtext }]}>

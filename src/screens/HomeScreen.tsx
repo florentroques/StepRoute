@@ -20,6 +20,7 @@ import { encodeRoute } from '../navigation/routeCodec';
 import { HistoryEntry, RouteType } from '../types';
 import { getColors, useAppScheme } from '../theme';
 import { useTranslation } from '../i18n';
+import SegmentedControl from '../components/SegmentedControl';
 
 export default function HomeScreen() {
   const navigation = useNavigation();
@@ -185,42 +186,31 @@ export default function HomeScreen() {
         <Text style={[styles.subtitle, { color: c.subtext }]}>{t.home.subtitle}</Text>
 
         <View style={styles.section}>
-          <Text style={[styles.label, { color: c.subtext }]}>{t.home.stepCount}</Text>
+          <Text nativeID="home-steps-label" style={[styles.label, { color: c.subtext }]}>{t.home.stepCount}</Text>
           <TextInput
             style={[styles.input, { backgroundColor: c.card, color: c.text, borderColor: c.controlBorder }]}
             value={stepsInput}
             onChangeText={setStepsInput}
             keyboardType="numeric"
+            aria-labelledby="home-steps-label"
             placeholder={t.home.stepPlaceholder}
             placeholderTextColor={c.muted}
           />
         </View>
 
         <View style={styles.section}>
-          <Text style={[styles.label, { color: c.subtext }]}>{t.home.routeType}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
-            {ROUTE_TYPES.map((rt) => (
-              <TouchableOpacity
-                key={rt.value}
-                style={[styles.segment, routeType === rt.value && { backgroundColor: c.card, borderColor: c.accent }]}
-                onPress={() => setRouteType(rt.value)}
-              >
-                <Text
-                  style={[
-                    styles.segmentText,
-                    { color: c.muted },
-                    routeType === rt.value && { color: c.text, fontWeight: '600' },
-                  ]}
-                >
-                  {rt.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+          <Text nativeID="home-route-type-label" style={[styles.label, { color: c.subtext }]}>{t.home.routeType}</Text>
+          <SegmentedControl
+            labelledBy="home-route-type-label"
+            options={ROUTE_TYPES}
+            value={routeType}
+            onChange={setRouteType}
+            colors={c}
+          />
         </View>
 
-        <View style={styles.section} onLayout={(e) => { addressSectionYRef.current = e.nativeEvent.layout.y; }}>
-          <Text style={[styles.label, { color: c.subtext }]}>{t.home.startingPoint}</Text>
+        <View role="group" aria-labelledby="home-start-label" style={styles.section} onLayout={(e) => { addressSectionYRef.current = e.nativeEvent.layout.y; }}>
+          <Text nativeID="home-start-label" style={[styles.label, { color: c.subtext }]}>{t.home.startingPoint}</Text>
 
           <TouchableOpacity
             style={[
@@ -249,6 +239,9 @@ export default function HomeScreen() {
                 style={[styles.input, styles.addressInput, { backgroundColor: c.card, color: c.text, borderColor: c.controlBorder }]}
                 value={addressInput}
                 onChangeText={handleAddressChange}
+                aria-label={t.home.searchAddress}
+                aria-expanded={suggestions.length > 0}
+                aria-autocomplete="list"
                 placeholder={t.home.searchAddress}
                 placeholderTextColor={c.muted}
                 returnKeyType="search"
@@ -263,17 +256,19 @@ export default function HomeScreen() {
                 style={[styles.searchButton, { backgroundColor: c.accent }]}
                 onPress={handleSearchAddress}
                 disabled={isGeocodingLoading}
+                aria-label={t.home.search}
+                aria-busy={isGeocodingLoading}
               >
                 {isGeocodingLoading ? (
                   <ActivityIndicator color={c.onAccent} size="small" />
                 ) : (
-                  <Text style={[styles.searchArrow, { color: c.onAccent }]}>→</Text>
+                  <Text style={[styles.searchArrow, { color: c.onAccent }]} aria-hidden>→</Text>
                 )}
               </TouchableOpacity>
             </View>
 
             {suggestions.length > 0 && (
-              <View style={[styles.suggestionsList, { backgroundColor: c.card }]}>
+              <View role="list" aria-label={t.home.suggestions} style={[styles.suggestionsList, { backgroundColor: c.card }]}>
                 {suggestions.map((s, i) => (
                   <TouchableOpacity
                     key={i}
@@ -290,18 +285,21 @@ export default function HomeScreen() {
           </View>
 
           {addressConfirmText ? (
-            <Text style={[styles.locationConfirm, { color: c.accent }]} numberOfLines={1}>
-              ✓ {addressConfirmText}
+            <Text style={[styles.locationConfirm, { color: c.accent }]} numberOfLines={1} aria-live="polite">
+              <Text aria-hidden>✓ </Text>
+              {addressConfirmText}
             </Text>
           ) : null}
         </View>
 
-        {error ? <Text style={[styles.error, { color: c.danger }]}>{error}</Text> : null}
+        {error ? <Text role="alert" style={[styles.error, { color: c.danger }]}>{error}</Text> : null}
 
         <TouchableOpacity
           style={[styles.generateButton, { backgroundColor: c.accent }, isLoading && styles.generateButtonDisabled]}
           onPress={handleGenerate}
           disabled={isLoading}
+          aria-busy={isLoading}
+          aria-label={isLoading ? progressMsg || t.home.generating : t.home.generate}
         >
           {isLoading ? (
             <ActivityIndicator color={c.onAccent} />
@@ -311,7 +309,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         {isLoading && progressMsg ? (
-          <Text style={[styles.progressMsg, { color: c.subtext }]}>{progressMsg}</Text>
+          <Text aria-live="polite" style={[styles.progressMsg, { color: c.subtext }]}>{progressMsg}</Text>
         ) : null}
       </ScrollView>
     </KeyboardAvoidingView>
@@ -338,9 +336,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 2,
   },
-  segmented: { flexDirection: 'row', borderRadius: 10, padding: 3, borderWidth: 1 },
-  segment: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, borderWidth: 2, borderColor: 'transparent' },
-  segmentText: { fontSize: 13, fontWeight: '500' },
   locationButton: {
     borderRadius: 12,
     paddingHorizontal: 16,

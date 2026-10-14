@@ -135,8 +135,9 @@ export default function MapScreen() {
         style={[styles.recenterButton, { backgroundColor: c.card, borderColor: c.controlBorder, bottom: insets.bottom + overlayHeight + 24 }]}
         onPress={handleRecenter}
         accessibilityLabel={t.map.recenter}
+        role="button"
       >
-        <Text style={[styles.recenterIcon, { color: isTracking && !isFollowingUser ? c.subtext : c.accent }]}>⊙</Text>
+        <Text aria-hidden style={[styles.recenterIcon, { color: isTracking && !isFollowingUser ? c.subtext : c.accent }]}>⊙</Text>
       </TouchableOpacity>
 
       <View
@@ -166,6 +167,8 @@ export default function MapScreen() {
                 style={[styles.actionButton, { backgroundColor: c.card, borderColor: c.controlBorder }, regenerating && styles.actionButtonDisabled]}
                 onPress={handleRegenerate}
                 disabled={regenerating}
+                aria-busy={regenerating}
+                aria-label={t.map.regenerate}
               >
                 {regenerating ? (
                   <ActivityIndicator color={c.accent} size="small" />
@@ -186,7 +189,7 @@ export default function MapScreen() {
 
               {canShareRoute && (
                 <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card, borderColor: c.controlBorder }]} onPress={handleShare}>
-                  <Text style={[styles.actionButtonText, { color: c.accent }]}>
+                  <Text style={[styles.actionButtonText, { color: c.accent }]} aria-live="polite">
                     {linkCopied ? t.map.linkCopied : t.map.share}
                   </Text>
                 </TouchableOpacity>
@@ -199,7 +202,10 @@ export default function MapScreen() {
           style={[styles.backButton, { backgroundColor: c.card, borderColor: c.controlBorder }]}
           onPress={handleNewRoute}
         >
-          <Text style={[styles.backButtonText, { color: c.accent }]}>{t.map.newRoute}</Text>
+          <Text style={[styles.backButtonText, { color: c.accent }]}>
+            <Text aria-hidden>← </Text>
+            {t.map.newRoute}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

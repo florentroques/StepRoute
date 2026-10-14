@@ -55,7 +55,7 @@ export default function RouteCard({ entry, colors: c, onPress, onToggleFavorite 
       <View style={styles.footer}>
         <View style={styles.stats}>
           <Text style={[styles.stat, { color: c.text }]}>{formatDistance(entry.distanceMeters)}</Text>
-          <Text style={[styles.statSep, { color: c.muted }]}>·</Text>
+          <Text style={[styles.statSep, { color: c.muted }]} aria-hidden>·</Text>
           <Text style={[styles.stat, { color: c.text }]}>
             {entry.steps.toLocaleString(t.history.locale)} {t.history.steps}
           </Text>
@@ -68,7 +68,7 @@ export default function RouteCard({ entry, colors: c, onPress, onToggleFavorite 
               accessibilityRole="button"
               accessibilityLabel={t.map.share}
             >
-              <Text style={[styles.shareText, { color: c.accent }]}>
+              <Text style={[styles.shareText, { color: c.accent }]} aria-live="polite">
                 {linkCopied ? t.map.linkCopied : t.map.share}
               </Text>
             </TouchableOpacity>
@@ -86,7 +86,7 @@ export default function RouteCard({ entry, colors: c, onPress, onToggleFavorite 
             accessibilityLabel={entry.isFavorite ? t.history.removeFavorite : t.history.addFavorite}
             accessibilityState={{ selected: !!entry.isFavorite }}
           >
-            <Text style={[styles.star, { color: entry.isFavorite ? c.accent : c.muted }]}>
+            <Text style={[styles.star, { color: entry.isFavorite ? c.accent : c.muted }]} aria-hidden>
               {entry.isFavorite ? '★' : '☆'}
             </Text>
           </TouchableOpacity>

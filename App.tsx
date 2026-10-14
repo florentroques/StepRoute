@@ -29,6 +29,8 @@ function TabNavigator() {
         headerShown: false,
         tabBarActiveTintColor: c.accent,
         tabBarInactiveTintColor: c.muted,
+        // Accent and muted are close in lightness, so the active tab also gets a background.
+        tabBarActiveBackgroundColor: c.cardAlt,
         tabBarStyle: {
           backgroundColor: c.tabBar,
           borderTopColor: c.tabBarBorder,

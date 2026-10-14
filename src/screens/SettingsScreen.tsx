@@ -58,11 +58,11 @@ export default function SettingsScreen() {
 
         <View style={styles.field}>
           <Text style={[styles.label, { color: c.text }]}>{t.settings.theme}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg }]}>
+          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
             {THEME_OPTIONS.map((opt) => (
               <TouchableOpacity
                 key={opt.value}
-                style={[styles.segment, themePreference === opt.value && { backgroundColor: c.card }]}
+                style={[styles.segment, themePreference === opt.value && { backgroundColor: c.card, borderColor: c.accent }]}
                 onPress={() => setThemePreference(opt.value)}
               >
                 <Text
@@ -83,11 +83,11 @@ export default function SettingsScreen() {
 
         <View style={styles.field}>
           <Text style={[styles.label, { color: c.text }]}>{t.settings.language}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg }]}>
+          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
             {LANGUAGE_OPTIONS.map((opt) => (
               <TouchableOpacity
                 key={opt.value}
-                style={[styles.segment, language === opt.value && { backgroundColor: c.card }]}
+                style={[styles.segment, language === opt.value && { backgroundColor: c.card, borderColor: c.accent }]}
                 onPress={() => setLanguage(opt.value)}
               >
                 <Text
@@ -115,7 +115,7 @@ export default function SettingsScreen() {
           <Text style={[styles.label, { color: c.text }]}>{t.settings.height}</Text>
           <View style={styles.inputRow}>
             <TextInput
-              style={[styles.input, { backgroundColor: c.cardAlt, color: c.text }]}
+              style={[styles.input, { backgroundColor: c.cardAlt, color: c.text, borderColor: c.controlBorder }]}
               value={heightInput}
               onChangeText={handleHeightChange}
               keyboardType="numeric"
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
 
         <View style={styles.field}>
           <Text style={[styles.label, { color: c.text }]}>{t.settings.strideLength}</Text>
-          <Text style={styles.valueText}>{(strideLength * 100).toFixed(1)} cm</Text>
+          <Text style={[styles.valueText, { color: c.accent }]}>{(strideLength * 100).toFixed(1)} cm</Text>
           <Text style={[styles.hint, { color: c.muted }]}>
             {t.settings.strideHint(((strideLength * 10000) / 1000).toFixed(1))}
           </Text>
@@ -145,11 +145,11 @@ export default function SettingsScreen() {
 
         <View style={styles.field}>
           <Text style={[styles.label, { color: c.text }]}>{t.settings.avoidHighways}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg }]}>
+          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
             {([false, true] as const).map((val) => (
               <TouchableOpacity
                 key={String(val)}
-                style={[styles.segment, avoidHighways === val && { backgroundColor: c.card }]}
+                style={[styles.segment, avoidHighways === val && { backgroundColor: c.card, borderColor: c.accent }]}
                 onPress={() => setAvoidHighways(val)}
               >
                 <Text
@@ -170,11 +170,11 @@ export default function SettingsScreen() {
 
         <View style={styles.field}>
           <Text style={[styles.label, { color: c.text }]}>{t.settings.preferGreen}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg }]}>
+          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
             {([false, true] as const).map((val) => (
               <TouchableOpacity
                 key={String(val)}
-                style={[styles.segment, preferGreen === val && { backgroundColor: c.card }]}
+                style={[styles.segment, preferGreen === val && { backgroundColor: c.card, borderColor: c.accent }]}
                 onPress={() => setPreferGreen(val)}
               >
                 <Text
@@ -226,8 +226,8 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 13, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 16 },
   field: { marginBottom: 4 },
   label: { fontSize: 15, fontWeight: '500', marginBottom: 8 },
-  segmented: { flexDirection: 'row', borderRadius: 10, padding: 3 },
-  segment: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
+  segmented: { flexDirection: 'row', borderRadius: 10, padding: 3, borderWidth: 1 },
+  segment: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, borderWidth: 2, borderColor: 'transparent' },
   segmentText: { fontSize: 13, fontWeight: '500' },
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   input: {
@@ -236,9 +236,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     width: 100,
+    borderWidth: 1,
   },
   unit: { fontSize: 15 },
-  valueText: { fontSize: 22, fontWeight: '600', color: '#5DBE4A', marginBottom: 6 },
+  valueText: { fontSize: 22, fontWeight: '600', marginBottom: 6 },
   hint: { fontSize: 13, lineHeight: 18 },
   divider: { height: 1, marginVertical: 16 },
   linkRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },

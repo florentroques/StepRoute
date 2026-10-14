@@ -132,11 +132,11 @@ export default function MapScreen() {
 
       {/* Bouton recentrer flottant — bas droit, juste au-dessus de l'overlay */}
       <TouchableOpacity
-        style={[styles.recenterButton, { backgroundColor: c.card, bottom: insets.bottom + overlayHeight + 24 }]}
+        style={[styles.recenterButton, { backgroundColor: c.card, borderColor: c.controlBorder, bottom: insets.bottom + overlayHeight + 24 }]}
         onPress={handleRecenter}
         accessibilityLabel={t.map.recenter}
       >
-        <Text style={[styles.recenterIcon, { color: isTracking && !isFollowingUser ? c.subtext : '#5DBE4A' }]}>⊙</Text>
+        <Text style={[styles.recenterIcon, { color: isTracking && !isFollowingUser ? c.subtext : c.accent }]}>⊙</Text>
       </TouchableOpacity>
 
       <View
@@ -155,15 +155,15 @@ export default function MapScreen() {
                 {t.map.stepsWalked}
               </Text>
             </View>
-            <TouchableOpacity style={styles.stopButton} onPress={handleStopWalk}>
-              <Text style={[styles.actionButtonText, { color: '#fff' }]}>{t.map.stopWalk}</Text>
+            <TouchableOpacity style={[styles.stopButton, { backgroundColor: c.danger }]} onPress={handleStopWalk}>
+              <Text style={[styles.actionButtonText, { color: c.onDanger }]}>{t.map.stopWalk}</Text>
             </TouchableOpacity>
           </>
         ) : (
           <>
             <View style={styles.buttonRow}>
               <TouchableOpacity
-                style={[styles.actionButton, { backgroundColor: c.card }, regenerating && styles.actionButtonDisabled]}
+                style={[styles.actionButton, { backgroundColor: c.card, borderColor: c.controlBorder }, regenerating && styles.actionButtonDisabled]}
                 onPress={handleRegenerate}
                 disabled={regenerating}
               >
@@ -174,18 +174,18 @@ export default function MapScreen() {
                 )}
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.actionButton, styles.startButton]} onPress={startWalk}>
-                <Text style={[styles.actionButtonText, { color: '#fff' }]}>{t.map.startWalk}</Text>
+              <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.accent, borderColor: c.accent }]} onPress={startWalk}>
+                <Text style={[styles.actionButtonText, { color: c.onAccent }]}>{t.map.startWalk}</Text>
               </TouchableOpacity>
             </View>
 
             <View style={styles.buttonRow}>
-              <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card }]} onPress={handleOpenInMaps}>
+              <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card, borderColor: c.controlBorder }]} onPress={handleOpenInMaps}>
                 <Text style={[styles.actionButtonText, { color: c.accent }]}>{t.map.openInMaps}</Text>
               </TouchableOpacity>
 
               {canShareRoute && (
-                <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card }]} onPress={handleShare}>
+                <TouchableOpacity style={[styles.actionButton, { backgroundColor: c.card, borderColor: c.controlBorder }]} onPress={handleShare}>
                   <Text style={[styles.actionButtonText, { color: c.accent }]}>
                     {linkCopied ? t.map.linkCopied : t.map.share}
                   </Text>
@@ -196,7 +196,7 @@ export default function MapScreen() {
         )}
 
         <TouchableOpacity
-          style={[styles.backButton, { backgroundColor: c.card }]}
+          style={[styles.backButton, { backgroundColor: c.card, borderColor: c.controlBorder }]}
           onPress={handleNewRoute}
         >
           <Text style={[styles.backButtonText, { color: c.accent }]}>{t.map.newRoute}</Text>
@@ -210,6 +210,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
   recenterButton: {
+    borderWidth: 1,
     position: 'absolute',
     right: 16,
     width: 44,
@@ -232,6 +233,7 @@ const styles = StyleSheet.create({
   },
   buttonRow: { flexDirection: 'row', gap: 10 },
   actionButton: {
+    borderWidth: 1,
     flex: 1,
     borderRadius: 12,
     paddingVertical: 9,
@@ -245,7 +247,6 @@ const styles = StyleSheet.create({
   },
   actionButtonDisabled: { opacity: 0.6 },
   actionButtonText: { fontSize: 14, fontWeight: '600' },
-  startButton: { backgroundColor: '#5DBE4A' },
   stepCounterCard: {
     borderRadius: 12,
     paddingVertical: 12,
@@ -264,7 +265,6 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 16,
     alignItems: 'center' as const,
-    backgroundColor: '#e74c3c',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
@@ -272,6 +272,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   backButton: {
+    borderWidth: 1,
     borderRadius: 12,
     paddingVertical: 9,
     paddingHorizontal: 20,

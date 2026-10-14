@@ -2,6 +2,7 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { Coordinates } from '../types';
+import { getColors } from '../theme';
 import { getMapStyleUrl } from './mapStyles';
 import type { RouteMapHandle, RouteMapProps } from './RouteMap';
 
@@ -21,14 +22,16 @@ function fitPadding(overlayHeight: number) {
   return { top: 60, bottom: overlayHeight + 16, left: 40, right: 40 };
 }
 
-function createDot(color: string, size: number, borderWidth: number): HTMLElement {
+const palette = (dark: boolean) => getColors(dark ? 'dark' : 'light');
+
+function createDot(color: string, ring: string, size: number, borderWidth: number): HTMLElement {
   const el = document.createElement('div');
   el.style.cssText = [
     `width:${size}px`,
     `height:${size}px`,
     'border-radius:50%',
     `background:${color}`,
-    `border:${borderWidth}px solid #fff`,
+    `border:${borderWidth}px solid ${ring}`,
     'box-sizing:border-box',
   ].join(';');
   return el;
@@ -149,18 +152,19 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
+    const colors = palette(dark);
     const start = geometry[0];
     const end = geometry[geometry.length - 1];
     const markers = [
-      new maplibregl.Marker({ element: createDot('#5DBE4A', 16, 2) })
+      new maplibregl.Marker({ element: createDot(colors.accent, colors.card, 16, 2) })
         .setLngLat([start.longitude, start.latitude])
         .addTo(map),
-      new maplibregl.Marker({ element: createDot('#e74c3c', 16, 2) })
+      new maplibregl.Marker({ element: createDot(colors.danger, colors.card, 16, 2) })
         .setLngLat([end.longitude, end.latitude])
         .addTo(map),
     ];
     return () => markers.forEach((marker) => marker.remove());
-  }, [geometry]);
+  }, [geometry, dark]);
 
   // Frame the route above the overlay whenever it is not being followed on a walk.
   useEffect(() => {
@@ -173,15 +177,25 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
     map.fitBounds(getBounds(geometry), { padding: fitPadding(overlayHeight), duration: 500 });
   }, [geometry, overlayHeight, isTracking]);
 
+  // The dot is drawn with theme colours, so drop it on a theme change and let the effect below recreate it.
+  useEffect(
+    () => () => {
+      userMarkerRef.current?.remove();
+      userMarkerRef.current = null;
+    },
+    [dark],
+  );
+
   // User position dot.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
+    const colors = palette(dark);
     if (isTracking && userPosition) {
       if (userMarkerRef.current) {
         userMarkerRef.current.setLngLat(userPosition);
       } else {
-        userMarkerRef.current = new maplibregl.Marker({ element: createDot('#007AFF', 16, 2.5) })
+        userMarkerRef.current = new maplibregl.Marker({ element: createDot(colors.position, colors.card, 16, 2.5) })
           .setLngLat(userPosition)
           .addTo(map);
       }
@@ -189,7 +203,7 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
       userMarkerRef.current.remove();
       userMarkerRef.current = null;
     }
-  }, [isTracking, userPosition]);
+  }, [isTracking, userPosition, dark]);
 
   // Follow the user: zoom in on the first fix, then pan along.
   useEffect(() => {

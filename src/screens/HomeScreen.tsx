@@ -187,7 +187,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <Text style={[styles.label, { color: c.subtext }]}>{t.home.stepCount}</Text>
           <TextInput
-            style={[styles.input, { backgroundColor: c.card, color: c.text }]}
+            style={[styles.input, { backgroundColor: c.card, color: c.text, borderColor: c.controlBorder }]}
             value={stepsInput}
             onChangeText={setStepsInput}
             keyboardType="numeric"
@@ -198,11 +198,11 @@ export default function HomeScreen() {
 
         <View style={styles.section}>
           <Text style={[styles.label, { color: c.subtext }]}>{t.home.routeType}</Text>
-          <View style={[styles.segmented, { backgroundColor: c.segmentBg }]}>
+          <View style={[styles.segmented, { backgroundColor: c.segmentBg, borderColor: c.controlBorder }]}>
             {ROUTE_TYPES.map((rt) => (
               <TouchableOpacity
                 key={rt.value}
-                style={[styles.segment, routeType === rt.value && { backgroundColor: c.card }]}
+                style={[styles.segment, routeType === rt.value && { backgroundColor: c.card, borderColor: c.accent }]}
                 onPress={() => setRouteType(rt.value)}
               >
                 <Text
@@ -226,15 +226,15 @@ export default function HomeScreen() {
             style={[
               styles.locationButton,
               usingCurrentLocation
-                ? { backgroundColor: c.success }
-                : { backgroundColor: c.card },
+                ? { backgroundColor: c.accent, borderColor: c.accent }
+                : { backgroundColor: c.card, borderColor: c.controlBorder },
             ]}
             onPress={handleUseLocation}
           >
             <Text
               style={[
                 styles.locationButtonText,
-                { color: usingCurrentLocation ? '#fff' : c.accent },
+                { color: usingCurrentLocation ? c.onAccent : c.accent },
               ]}
             >
               {usingCurrentLocation ? t.home.locationActive : t.home.useLocation}
@@ -246,7 +246,7 @@ export default function HomeScreen() {
           <View style={styles.addressWrapper}>
             <View style={styles.addressRow}>
               <TextInput
-                style={[styles.input, styles.addressInput, { backgroundColor: c.card, color: c.text }]}
+                style={[styles.input, styles.addressInput, { backgroundColor: c.card, color: c.text, borderColor: c.controlBorder }]}
                 value={addressInput}
                 onChangeText={handleAddressChange}
                 placeholder={t.home.searchAddress}
@@ -260,14 +260,14 @@ export default function HomeScreen() {
                 }}
               />
               <TouchableOpacity
-                style={styles.searchButton}
+                style={[styles.searchButton, { backgroundColor: c.accent }]}
                 onPress={handleSearchAddress}
                 disabled={isGeocodingLoading}
               >
                 {isGeocodingLoading ? (
-                  <ActivityIndicator color="#fff" size="small" />
+                  <ActivityIndicator color={c.onAccent} size="small" />
                 ) : (
-                  <Text style={styles.searchArrow}>→</Text>
+                  <Text style={[styles.searchArrow, { color: c.onAccent }]}>→</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -290,23 +290,23 @@ export default function HomeScreen() {
           </View>
 
           {addressConfirmText ? (
-            <Text style={styles.locationConfirm} numberOfLines={1}>
+            <Text style={[styles.locationConfirm, { color: c.accent }]} numberOfLines={1}>
               ✓ {addressConfirmText}
             </Text>
           ) : null}
         </View>
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? <Text style={[styles.error, { color: c.danger }]}>{error}</Text> : null}
 
         <TouchableOpacity
-          style={[styles.generateButton, isLoading && styles.generateButtonDisabled]}
+          style={[styles.generateButton, { backgroundColor: c.accent }, isLoading && styles.generateButtonDisabled]}
           onPress={handleGenerate}
           disabled={isLoading}
         >
           {isLoading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={c.onAccent} />
           ) : (
-            <Text style={styles.generateButtonText}>{t.home.generate}</Text>
+            <Text style={[styles.generateButtonText, { color: c.onAccent }]}>{t.home.generate}</Text>
           )}
         </TouchableOpacity>
 
@@ -331,20 +331,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
+    borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 3,
     elevation: 2,
   },
-  segmented: { flexDirection: 'row', borderRadius: 10, padding: 3 },
-  segment: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8 },
+  segmented: { flexDirection: 'row', borderRadius: 10, padding: 3, borderWidth: 1 },
+  segment: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 8, borderWidth: 2, borderColor: 'transparent' },
   segmentText: { fontSize: 13, fontWeight: '500' },
   locationButton: {
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     alignItems: 'center',
+    borderWidth: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
@@ -357,14 +359,13 @@ const styles = StyleSheet.create({
   addressRow: { flexDirection: 'row', gap: 8, alignItems: 'stretch' },
   addressInput: { flex: 1 },
   searchButton: {
-    backgroundColor: '#5DBE4A',
     borderRadius: 12,
     width: 48,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 2,
   },
-  searchArrow: { color: '#fff', fontSize: 18, lineHeight: 18, includeFontPadding: false },
+  searchArrow: { fontSize: 18, lineHeight: 18, includeFontPadding: false },
   suggestionsList: {
     borderRadius: 12,
     marginTop: 4,
@@ -378,21 +379,20 @@ const styles = StyleSheet.create({
   },
   suggestionItem: { paddingHorizontal: 16, paddingVertical: 12 },
   suggestionText: { fontSize: 14, lineHeight: 20 },
-  locationConfirm: { marginTop: 8, color: '#5DBE4A', fontSize: 13, paddingHorizontal: 4 },
-  error: { color: '#e74c3c', fontSize: 13, marginBottom: 16, textAlign: 'center' },
+  locationConfirm: { marginTop: 8, fontSize: 13, paddingHorizontal: 4 },
+  error: { fontSize: 13, marginBottom: 16, textAlign: 'center' },
   generateButton: {
-    backgroundColor: '#5DBE4A',
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: 8,
-    shadowColor: '#5DBE4A',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
   },
   generateButtonDisabled: { opacity: 0.6 },
-  generateButtonText: { color: '#fff', fontSize: 17, fontWeight: '700' },
+  generateButtonText: { fontSize: 17, fontWeight: '700' },
   progressMsg: { marginTop: 10, textAlign: 'center', fontSize: 13 },
 });

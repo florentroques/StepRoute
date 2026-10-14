@@ -2,6 +2,7 @@ import MapLibreGL, { CameraRef } from '@maplibre/maplibre-react-native';
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Coordinates, LngLat } from '../types';
+import { getColors } from '../theme';
 import { getMapStyleUrl } from './mapStyles';
 
 MapLibreGL.setAccessToken(null);
@@ -38,6 +39,7 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
   ref,
 ) {
   const cameraRef = useRef<CameraRef | null>(null);
+  const colors = getColors(dark ? 'dark' : 'light');
   const hasInitialZoom = useRef(false);
 
   const start = geometry[0];
@@ -118,11 +120,11 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
       </MapLibreGL.ShapeSource>
 
       <MapLibreGL.PointAnnotation id="start" coordinate={[start.longitude, start.latitude]}>
-        <View style={[styles.marker, styles.markerStart]} />
+        <View style={[styles.marker, { backgroundColor: colors.accent, borderColor: colors.card }]} />
       </MapLibreGL.PointAnnotation>
 
       <MapLibreGL.PointAnnotation id="end" coordinate={[end.longitude, end.latitude]}>
-        <View style={[styles.marker, styles.markerEnd]} />
+        <View style={[styles.marker, { backgroundColor: colors.danger, borderColor: colors.card }]} />
       </MapLibreGL.PointAnnotation>
 
       {isTracking && userPosition && (
@@ -131,7 +133,7 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
           coordinate={userPosition}
           anchor={{ x: 0.5, y: 0.5 }}
         >
-          <View style={styles.userDot} />
+          <View style={[styles.userDot, { backgroundColor: colors.position, borderColor: colors.card }]} />
         </MapLibreGL.PointAnnotation>
       )}
     </MapLibreGL.MapView>
@@ -141,15 +143,11 @@ const RouteMap = forwardRef<RouteMapHandle, RouteMapProps>(function RouteMap(
 export default RouteMap;
 
 const styles = StyleSheet.create({
-  marker: { width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: '#fff' },
-  markerStart: { backgroundColor: '#5DBE4A' },
-  markerEnd: { backgroundColor: '#e74c3c' },
+  marker: { width: 16, height: 16, borderRadius: 8, borderWidth: 2 },
   userDot: {
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: '#007AFF',
     borderWidth: 2.5,
-    borderColor: '#fff',
   },
 });

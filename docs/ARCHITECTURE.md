@@ -47,6 +47,25 @@ Stack Navigator
 
 The tab navigator handles the main app sections. `MapScreen` is pushed on top after a route is generated or selected from history/favorites.
 
+`MapScreen` takes a single `route` param: the whole route, serialized by `src/navigation/routeCodec.ts`. It decodes the param to render, so it never depends on the store. Param types live in `src/navigation/types.ts`.
+
+### Web URLs
+
+On web, `src/navigation/linking.ts` maps screens to paths, so the address bar, browser back/forward and reloads work. Native does not use it.
+
+| Screen | Path |
+| --- | --- |
+| Home | `/` |
+| History | `/history` |
+| Favorites | `/favorites` |
+| Settings | `/settings` |
+| Map | `/route/<encoded route>` |
+| Privacy policy | `/privacy` |
+
+A route URL is self-contained: `/route/<type>~<steps>~<meters>~<ascent>~<descent>~<path>`. `<type>` is `l`, `o` or `r` (loop, one-way, round-trip). The numbers are rounded integers, and `ascent`/`descent` may be empty. `<path>` is the geometry as polyline-style deltas at 1e-5° (about 1 m) in the URL-safe base64 alphabet, roughly 3 characters per point. A link therefore opens on any device or browser without needing the sender's history. An invalid or truncated URL redirects to Home.
+
+Regenerating replaces the matching history entry (or adds one if the link was not in history) and updates the URL. Very long routes produce long URLs, so servers or chat apps with tight URL limits may truncate them.
+
 ## State Model
 
 State lives in `src/store/useStore.ts`.
@@ -67,11 +86,10 @@ Persisted fields:
 Session-only fields:
 
 - `startLocation`
-- `routeData`
 - `isLoading`
 - `error`
 
-History is capped to 20 entries. Favorites are stored as flags on history entries.
+History is not capped; it is stored in the browser's local storage on web (about 5 MB), so a very large history can eventually fill it. Favorites are stored as flags on history entries.
 
 ## Route Generation
 

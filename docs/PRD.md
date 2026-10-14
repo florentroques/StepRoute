@@ -31,7 +31,7 @@ The user chooses a step objective, a starting point, route preferences, and a ro
 - Location permission flow.
 - Address search through Nominatim.
 - Map display through MapLibre.
-- Local route history capped at 20 entries.
+- Local route history, with no entry limit.
 - Favorite routes.
 - GPX export.
 - External map opening.

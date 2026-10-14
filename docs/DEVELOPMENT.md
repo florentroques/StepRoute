@@ -30,6 +30,7 @@ npx expo export -p web    # static build in dist/
 - Installing the app and geolocation need HTTPS; `localhost` counts as secure.
 - First visit cannot work offline: the worker caches the bundle from the second load. Bump `VERSION` in `public/sw.js` to drop old caches.
 - Deploy `dist/` from the site root on any static host. Cloudflare Pages is one example: build command `npx expo export -p web`, output directory `dist`.
+- Routes are shared as `/route/<encoded route>` URLs; the format is documented in `docs/ARCHITECTURE.md` and implemented in `src/navigation/routeCodec.ts`. Reload on any path works because the host serves `index.html` for unknown paths (Cloudflare Pages does by default).
 - Native alerts are not available through React Native Web, so `src/utils/showAlert.web.ts` uses `window.alert`.
 
 ## Formatting And Linting

@@ -69,6 +69,9 @@ src/
   screens/FavoritesScreen.tsx
   screens/PrivacyPolicyScreen.tsx
   screens/SettingsScreen.tsx
+  navigation/linking.ts
+  navigation/routeCodec.ts
+  navigation/types.ts
   services/geocodingService.ts
   services/locationService.ts
   services/routeService.ts
@@ -136,6 +139,7 @@ npx expo export -p web       # static build in dist/
 - Installing and geolocation both require HTTPS (`localhost` is exempt).
 - Offline: after a second load, the service worker serves the app shell and hashed build files from cache. Map tiles, routing and geocoding always need a network connection.
 - Without a pedometer, live steps are estimated from GPS.
+- Each screen has a URL (`/history`, `/favorites`, `/settings`, `/privacy`), and a route opens at `/route/<encoded route>`. The route is encoded in the URL itself, so a link works on any device without the sender's history.
 
 ## Route Generation
 

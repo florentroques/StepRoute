@@ -3,13 +3,20 @@ import * as Location from 'expo-location';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, AppState } from 'react-native';
 import { useTranslation } from '../i18n';
+import { LocationFix, LocationWatch, watchLocation } from '../services/locationWatch';
 import { StepSubscription, watchSteps } from '../services/stepCounter';
+import { haversineMeters, heightToStrideLength, metersToSteps } from '../services/stepService';
 import { useStore } from '../store/useStore';
 import { LngLat } from '../types';
+
+// GPS step estimate: drop fixes that are too coarse and moves that are mostly jitter.
+const MAX_FIX_ACCURACY_M = 30;
+const MIN_SEGMENT_M = 2;
 
 export function useWalkTracking() {
   const t = useTranslation();
   const {
+    heightCm,
     isTracking: storedIsTracking,
     liveStepsSnapshot,
     setIsTracking: setStoredIsTracking,
@@ -20,10 +27,13 @@ export function useWalkTracking() {
   const [userPosition, setUserPosition] = useState<LngLat | null>(null);
   const [isFollowingUser, setIsFollowingUser] = useState(false);
   const stepWatchRef = useRef<StepSubscription | null>(null);
-  const locationWatchRef = useRef<Location.LocationSubscription | null>(null);
+  const locationWatchRef = useRef<LocationWatch | null>(null);
   const isFollowingUserRef = useRef(false);
   const isTrackingRef = useRef(false);
   const liveStepsRef = useRef(0);
+  const gpsFallbackRef = useRef(false);
+  const gpsDistanceRef = useRef(0);
+  const lastFixRef = useRef<LngLat | null>(null);
 
   useEffect(() => {
     isFollowingUserRef.current = isFollowingUser;
@@ -62,7 +72,28 @@ export function useWalkTracking() {
     };
   }, []);
 
+  /** Updates the dot and, when there is no pedometer, estimates steps from GPS distance. */
+  function handleFix(fix: LocationFix, stepsBaseline: number, strideLength: number) {
+    const pos: LngLat = [fix.longitude, fix.latitude];
+    setUserPosition(pos);
+    if (fix.accuracy != null && fix.accuracy > MAX_FIX_ACCURACY_M) return;
+    const last = lastFixRef.current;
+    if (!last || !gpsFallbackRef.current) {
+      lastFixRef.current = pos;
+      return;
+    }
+    const segment = haversineMeters(last, pos);
+    if (segment < MIN_SEGMENT_M) return;
+    lastFixRef.current = pos;
+    gpsDistanceRef.current += segment;
+    setLiveSteps(stepsBaseline + metersToSteps(gpsDistanceRef.current, strideLength));
+  }
+
   async function startSubscriptions(stepsBaseline: number) {
+    gpsFallbackRef.current = false;
+    gpsDistanceRef.current = 0;
+    lastFixRef.current = null;
+    const strideLength = heightToStrideLength(heightCm);
     await activateKeepAwakeAsync();
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
@@ -70,12 +101,12 @@ export function useWalkTracking() {
     } else {
       setIsFollowingUser(true);
       isFollowingUserRef.current = true;
-      locationWatchRef.current = await Location.watchPositionAsync(
-        { accuracy: Location.Accuracy.BestForNavigation, distanceInterval: 3 },
-        (loc) => setUserPosition([loc.coords.longitude, loc.coords.latitude]),
+      locationWatchRef.current = await watchLocation((fix) =>
+        handleFix(fix, stepsBaseline, strideLength),
       );
     }
     stepWatchRef.current = await watchSteps((steps) => setLiveSteps(stepsBaseline + steps));
+    gpsFallbackRef.current = stepWatchRef.current === null;
   }
 
   async function startWalk() {
